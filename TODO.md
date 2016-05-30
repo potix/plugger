@@ -1,0 +1,1 @@
+- coreやpluginをgo buildするとなぜがvendor以下のフォルダが読まれてないので後で調べる
