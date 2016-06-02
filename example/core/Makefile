@@ -2,6 +2,8 @@ CDIR := $(shell pwd)
 
 all:
 	glide update
-	GOPATH=${GOPATH}:$(CDIR) go build -o core
+	go build -o core
 install:
 	glide install
+clean:
+	rm -rf core glide.lock vendor
