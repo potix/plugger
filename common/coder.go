@@ -1,4 +1,4 @@
-package coder
+package common
 
 import (
 	"bytes"

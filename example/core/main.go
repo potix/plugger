@@ -10,7 +10,8 @@ import (
 	"github.com/potix/plugger/example/result" 
 )
 
-func eventHandler(pluginHandle *plugger.PluginHandle, eventName string, eventParam interface{}, err error) {
+func eventHandler(pluginHandle *plugger.PluginHandle,
+     eventName string, eventParam interface{}, err error) (interface{}, error) {
 	fmt.Println("event handler")
 	if err != nil {
 		fmt.Println(err)
@@ -18,6 +19,11 @@ func eventHandler(pluginHandle *plugger.PluginHandle, eventName string, eventPar
 	fmt.Println("event name", eventName)
 	fmt.Println("event param 1", eventParam.(*event.EventParam).GetValue1())
 	fmt.Println("event param 2", eventParam.(*event.EventParam).GetValue2())
+
+	eventResult := result.NewEventResult() 
+	eventResult.SetValue("handling ok")
+
+	return eventResult, nil
 }
 
 func main() {
@@ -34,15 +40,28 @@ func main() {
 	commandParam.SetValue2("value2")
 
 	p := plugger.NewPlugger()
+
+	p.SetVersionSafe(true)
+
 	if err := p.Load("../plugins"); err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	fmt.Println("------- get plugins -------")
+	for _, v := range p.GetPluginNames() {
+		fmt.Println(v)
+	}
+
+	fmt.Println("------- exists plugins -------")
+	v := p.ExistsPluginNames([]string{"sample3","sample2","sample1", "sample0"})
+	fmt.Println(v)
+
 	fmt.Println("--------plugin1--------")
 	time.Sleep(3 * time.Second)
 
-	plugin1, err := p.NewPlugin("sample1", result.NewResultAsInterface, event.NewEventParamAsInterface)
+	plugin1, err := p.NewPlugin("sample1", result.NewResultAsInterface,
+	     result.NewCommandResultAsInterface, event.NewEventParamAsInterface)
         if err != nil {
 		fmt.Println(err)
 	} else {
@@ -74,7 +93,7 @@ func main() {
 		if err != nil {
 			fmt.Println("c: plugin1 command err", err.Error())
 		} else {
-			fmt.Println("c: plugin1 command result", r.(*result.Result).GetValue())
+			fmt.Println("c: plugin1 command result", r.(*result.CommandResult).GetValue())
 		}
 		fmt.Println("--------event wait--------")
 		time.Sleep(3 * time.Second)
@@ -100,7 +119,8 @@ func main() {
 	fmt.Println("--------plugin2--------")
 	time.Sleep(3 * time.Second)
 
-	plugin2, err := p.NewPlugin("sample2", result.NewResultAsInterface, event.NewEventParamAsInterface)
+	plugin2, err := p.NewPlugin("sample2", result.NewResultAsInterface,
+	    result.NewCommandResultAsInterface, event.NewEventParamAsInterface)
 	if  err != nil {
 		fmt.Println(err)
 	} else {
@@ -131,7 +151,7 @@ func main() {
 		if err != nil {
 			fmt.Println("c: plugin2 command err", err.Error())
 		} else {
-			fmt.Println("c: plugin2 command result", r.(*result.Result).GetValue())
+			fmt.Println("c: plugin2 command result", r.(*result.CommandResult).GetValue())
 		}
 		fmt.Println("--------event wait--------")
 		time.Sleep(3 * time.Second)

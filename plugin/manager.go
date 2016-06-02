@@ -3,33 +3,69 @@ package plugin
 import (
 	"sync"
 	"github.com/pkg/errors"
-	"github.com/potix/plugger/coder"
-	"github.com/potix/plugger/generator"
+	"github.com/potix/plugger/common"
 )
 
+const (
+	bigBufferSize = 2048
+)
+
+type eventRequest struct {
+        eventName string
+        eventParam interface{}
+	eventResChan chan *eventResponse
+}
+
+type eventResponse struct {
+        eventResult interface{}
+        err error
+	eventHandling common.EventHandling
+}
 
 type eventInfo struct {
 	eventId          uint64
 	eventName        *string
 	eventParamBuffer *[]byte
 	err              error
+	eventResChan     chan *eventResponse
+	argErr           error
 }
 
 type eventManager struct {
 	eventMap map[uint64]*eventInfo
+	rwMutex   *sync.RWMutex
 }
 
-func (em *eventManager) addEvent(eventId uint64, eventName *string, eventParamBuffer *[]byte, err error) {
-	eventInfo := &eventInfo {
+func (em *eventManager) newEventResponse(
+    eventResult interface{}, err error, eventHandling common.EventHandling) *eventResponse {
+	return &eventResponse {
+		eventResult: eventResult,
+		err: err,
+		eventHandling: eventHandling,
+	}
+}
+
+func (em *eventManager) newEventInfo(eventId uint64, eventName *string,
+     eventParamBuffer *[]byte, err error, eventResChan chan *eventResponse, argErr error) *eventInfo {
+	return &eventInfo {
 		eventId          : eventId,
 		eventName        : eventName,
 		eventParamBuffer : eventParamBuffer,
 		err              : err,
+		eventResChan     : eventResChan,
+		argErr           : argErr,
 	}
+}
+
+func (em *eventManager) set(eventId uint64, eventInfo *eventInfo) {
+	em.rwMutex.Lock()
+        defer em.rwMutex.Unlock()
 	em.eventMap[eventId] = eventInfo
 }
 
-func (em *eventManager) getEvent(eventId uint64) (*eventInfo, error) {
+func (em *eventManager) get(eventId uint64) (*eventInfo, error) {
+	em.rwMutex.RLock()
+        defer em.rwMutex.RUnlock()
 	eventInfo, ok := em.eventMap[eventId]
 	if !ok {
 		return nil, errors.Errorf("not found event (id = %v)", eventId)
@@ -37,7 +73,9 @@ func (em *eventManager) getEvent(eventId uint64) (*eventInfo, error) {
 	return eventInfo, nil
 }
 
-func (em *eventManager) deleteEvent(eventId uint64) {
+func (em *eventManager) delete(eventId uint64) {
+	em.rwMutex.Lock()
+        defer em.rwMutex.Unlock()
 	delete(em.eventMap, eventId)
 }
 
@@ -49,23 +87,26 @@ type resultInfo struct {
 
 type resultManager struct {
 	resultMap map[uint64]*resultInfo
-	mutex     *sync.Mutex
+	rwMutex     *sync.RWMutex
 }
 
-func (rm *resultManager) addResult(resultId uint64, result *[]byte, err error) {
-	rm.mutex.Lock()
-        defer rm.mutex.Unlock()
-	resultInfo := &resultInfo {
+func (rm *resultManager) newResultInfo(resultId uint64, result *[]byte, err error) *resultInfo {
+	return &resultInfo {
 		resultId     : resultId,
 		resultBuffer : result,
 		err          : err,
 	}
+}
+
+func (rm *resultManager) add(resultId uint64, resultInfo *resultInfo) {
+	rm.rwMutex.Lock()
+        defer rm.rwMutex.Unlock()
 	rm.resultMap[resultId] = resultInfo
 }
 
-func (rm *resultManager) getResult(resultId uint64) (*resultInfo, error) {
-	rm.mutex.Lock()
-        defer rm.mutex.Unlock()
+func (rm *resultManager) get(resultId uint64) (*resultInfo, error) {
+	rm.rwMutex.RLock()
+        defer rm.rwMutex.RUnlock()
 	result, ok := rm.resultMap[resultId]
 	if !ok {
 		return nil, errors.Errorf("not found result (id = %v)", resultId)
@@ -73,18 +114,18 @@ func (rm *resultManager) getResult(resultId uint64) (*resultInfo, error) {
 	return result, nil
 }
 
-func (rm *resultManager) deleteResult(resultId uint64) {
-	rm.mutex.Lock()
-        defer rm.mutex.Unlock()
+func (rm *resultManager) delete(resultId uint64) {
+	rm.rwMutex.Lock()
+        defer rm.rwMutex.Unlock()
 	delete(rm.resultMap, resultId)
 }
 
 type instanceInfo struct {
 	instanceId    uint64
 	plugin        Plugin
-	resultManager *resultManager
-	eventManager  *eventManager
-	eventChan     chan *event
+	resultMgr     *resultManager
+	eventMgr      *eventManager
+	eventReqChan  chan *eventRequest
 }
 
 type instManager struct {
@@ -93,15 +134,21 @@ type instManager struct {
 	rwMutex         *sync.RWMutex
 }
 
-func (im *instManager) addInstance(instanceId uint64, plugin Plugin) {
+func (im *instManager) setInstance(instanceId uint64, plugin Plugin) {
 	im.rwMutex.Lock()
         defer im.rwMutex.Unlock()
 	instInfo := &instanceInfo {
-		instanceId      : instanceId,
-		plugin          : plugin,
-		resultManager   : new(resultManager),
-		eventManager    : new(eventManager),
-		eventChan       : make(chan *event),
+		instanceId   : instanceId,
+		plugin       : plugin,
+		resultMgr    : &resultManager {
+			resultMap : make(map[uint64]*resultInfo),
+			rwMutex   : new(sync.RWMutex),
+		},
+		eventMgr     : &eventManager {
+			eventMap : make(map[uint64]*eventInfo),
+			rwMutex  : new(sync.RWMutex),
+		},
+		eventReqChan : make(chan *eventRequest),
 	}
 	im.instMap[instanceId] = instInfo
 	im.instMapByPlugin[plugin] = instInfo
@@ -134,7 +181,7 @@ func (im *instManager) deleteInstance(instanceId uint64) {
 	if !ok {
 		return 
 	}
-	close(instInfo.eventChan)
+	close(instInfo.eventReqChan)
 	delete(im.instMap, instanceId)
 	delete(im.instMapByPlugin, instInfo.plugin)
 }
@@ -144,20 +191,19 @@ type pluginManager struct {
 	newPluginFunc       func() Plugin
 	newConfigFunc       func() interface{}
 	newCommandParamFunc func() interface{}
-	// TODO
-	//   event
+	newEventResultFunc  func() interface{}
 	instMgr             *instManager
-	coder               *coder.Coder
-	idGen               *generator.IdGenerator
+	coder               *common.Coder
 }
 
-func (pm *pluginManager) eventEmit(plugin Plugin, event *event) error {
+func (pm *pluginManager) eventEmit(plugin Plugin, eventRequest *eventRequest) (interface{}, error) {
 	instInfo, err := pm.instMgr.getInstanceByPlugin(plugin)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	instInfo.eventChan <- event
-	return nil
+	instInfo.eventReqChan <- eventRequest
+	eventResponse := <- eventRequest.eventResChan
+	return eventResponse.eventResult, eventResponse.err
 }
 
 var pluginMgr *pluginManager
@@ -169,7 +215,6 @@ func init() {
 			instMapByPlugin : make(map[Plugin]*instanceInfo),
 			rwMutex         : new(sync.RWMutex),
 		},
-		coder   : coder.NewCoder(),
-		idGen   : generator.NewIdGenerator(),
+		coder   : common.NewCoder(),
 	}
 }

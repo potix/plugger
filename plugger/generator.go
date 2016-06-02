@@ -1,15 +1,15 @@
-package generator
+package plugger
 
 import (
 	"sync"
 )
 
-type IdGenerator struct {
+type idGenerator struct {
 	currentId uint64
 	mutex *sync.Mutex
 }
 
-func (ig *IdGenerator) Get() uint64 {
+func (ig *idGenerator) Get() uint64 {
 	ig.mutex.Lock()
 	defer ig.mutex.Unlock()
 	ig.currentId += 1
@@ -19,8 +19,8 @@ func (ig *IdGenerator) Get() uint64 {
 	return ig.currentId
 }
 
-func NewIdGenerator() *IdGenerator {
-	return &IdGenerator {
+func newIdGenerator() *idGenerator {
+	return &idGenerator {
 		mutex : new(sync.Mutex),
 	}
 }

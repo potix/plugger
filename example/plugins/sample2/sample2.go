@@ -56,14 +56,19 @@ func (s *sample2) Command(cmdParam interface{}) (interface{}, error) {
         fmt.Println("p: sample2 command")
         fmt.Println("p: sample2 command param 1", cmdParam.(*command.CommandParam).GetValue1())
         fmt.Println("p: sample2 command param 2", cmdParam.(*command.CommandParam).GetValue2())
-	r := result.NewResult()
-	r.SetValue("OK")
+	r := result.NewCommandResult()
+	r.SetValue("OKOK")
 
         fmt.Println("p: sample2 event emit")
         event := event.NewEventParam()
         event.SetValue1("1111")
         event.SetValue2("2222")
-        plugin.EventEmit(s, "fugafuga", event)
+
+        eventResult, err := plugin.EventEmit(s, "fugafuga", event)
+        if err != nil {
+                println("p: event result error", err.Error())
+        }
+        println("p: event result", eventResult.(*result.EventResult).GetValue())
 
         return r, nil
 }
@@ -77,6 +82,7 @@ func init() {
 	plugin.SetNewPluginFunc(NewSample2)
 	plugin.SetNewConfigFunc(config.NewConfigAsInterface)
 	plugin.SetNewCommandParamFunc(command.NewCommandParamAsInterface)
+	plugin.SetNewEventResultFunc(result.NewEventResultAsInterface)
 }
 
 func main() {
