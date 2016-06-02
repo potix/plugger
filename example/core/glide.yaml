@@ -2,21 +2,9 @@ package: github.com/potix/plugger/example/core
 version: ""
 import:
 - package: github.com/potix/plugger/plugger
-  vcs: git
-  repo: https://github.com/potix/plugger.git
 - package: github.com/potix/plugger/common
-  vcs: git
-  repo: https://github.com/potix/plugger.git
 - package: github.com/potix/plugger/example/command
-  vcs: git
-  repo: https://github.com/potix/plugger.git
 - package: github.com/potix/plugger/example/event
-  vcs: git
-  repo: https://github.com/potix/plugger.git
 - package: github.com/potix/plugger/example/config
-  vcs: git
-  repo: https://github.com/potix/plugger.git
 - package: github.com/potix/plugger/example/result
-  vcs: git
-  repo: https://github.com/potix/plugger.git
 - package: github.com/pkg/errors
