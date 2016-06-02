@@ -1,22 +1,22 @@
-package: gh.iiji.jp/kakine/plugger/example/core
+package: github.com/potix/plugger/example/core
 version: ""
 import:
-- package: gh.iiji.jp/kakine/plugger/plugger
+- package: github.com/potix/plugger/plugger
   vcs: git
-  repo: https://gh.iiji.jp/kakine/plugger.git
-- package: gh.iiji.jp/kakine/plugger/common
+  repo: https://github.com/potix/plugger.git
+- package: github.com/potix/plugger/common
   vcs: git
-  repo: https://gh.iiji.jp/kakine/plugger.git
-- package: gh.iiji.jp/kakine/plugger/example/command
+  repo: https://github.com/potix/plugger.git
+- package: github.com/potix/plugger/example/command
   vcs: git
-  repo: https://gh.iiji.jp/kakine/plugger.git
-- package: gh.iiji.jp/kakine/plugger/example/event
+  repo: https://github.com/potix/plugger.git
+- package: github.com/potix/plugger/example/event
   vcs: git
-  repo: https://gh.iiji.jp/kakine/plugger.git
-- package: gh.iiji.jp/kakine/plugger/example/config
+  repo: https://github.com/potix/plugger.git
+- package: github.com/potix/plugger/example/config
   vcs: git
-  repo: https://gh.iiji.jp/kakine/plugger.git
-- package: gh.iiji.jp/kakine/plugger/example/result
+  repo: https://github.com/potix/plugger.git
+- package: github.com/potix/plugger/example/result
   vcs: git
-  repo: https://gh.iiji.jp/kakine/plugger.git
+  repo: https://github.com/potix/plugger.git
 - package: github.com/pkg/errors
