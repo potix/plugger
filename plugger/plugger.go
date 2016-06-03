@@ -413,7 +413,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 	var warn error
 	ext := ".so"
 	if runtime.GOOS == "windows" {
-		return errors.New("no support platform")
+		return nil, errors.New("no support platform")
 	} else if runtime.GOOS == "darwin" {
 		ext = ".dylib"
 	}
@@ -566,11 +566,11 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 		if common.BuildVersion != pluginBuildVersion {
 			if p.versionSafe {
 				if warn != nil {
-					warn = fmt.Sprintf("build version is mismatch (plugger %v, plugin %v),skip plugin",
-					    common.BuildVersion, pluginBuildVersion)
+					warn = errors.New(fmt.Sprintf("build version is mismatch (plugger %v, plugin %v), skip plugin",
+					    common.BuildVersion, pluginBuildVersion))
 				} else {
 					errors.Wrap(warn,
-					    fmt.Sprintf("build version is mismatch (plugger %v, plugin %v),skip plugin",
+					    fmt.Sprintf("build version is mismatch (plugger %v, plugin %v), skip plugin",
 					    common.BuildVersion, pluginBuildVersion))
 				}
 				dlHandle.dlClose()
