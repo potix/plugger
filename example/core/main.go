@@ -52,6 +52,8 @@ func main() {
 		fmt.Println(warn)
 	}
 
+	fmt.Println(p.GetBuildVersion())
+
 	fmt.Println("------- get plugins -------")
 	for _, v := range p.GetPluginNames() {
 		fmt.Println(v)
