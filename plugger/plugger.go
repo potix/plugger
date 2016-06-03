@@ -427,7 +427,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -437,7 +437,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -447,7 +447,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -457,7 +457,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -467,7 +467,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -477,7 +477,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -487,7 +487,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -497,7 +497,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -507,7 +507,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -517,7 +517,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -527,7 +527,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -537,7 +537,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -547,7 +547,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
@@ -557,7 +557,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			if warn != nil {
 				warn = errors.New(fmt.Sprintf("%v: plugin name is empty", pf))
 			} else {
-				errors.wrap(warn, fmt.Sprintf("%v: plugin name is empty", pf))
+				errors.Wrap(warn, fmt.Sprintf("%v: plugin name is empty", pf))
 			}
 			dlHandle.dlClose()
 			continue
@@ -569,7 +569,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 					warn = fmt.Sprintf("build version is mismatch (plugger %v, plugin %v),skip plugin",
 					    common.BuildVersion, pluginBuildVersion)
 				} else {
-					errors.wrap(warn,
+					errors.Wrap(warn,
 					    fmt.Sprintf("build version is mismatch (plugger %v, plugin %v),skip plugin",
 					    common.BuildVersion, pluginBuildVersion))
 				}
