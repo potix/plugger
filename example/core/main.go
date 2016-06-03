@@ -43,7 +43,8 @@ func main() {
 
 	p.SetVersionSafe(true)
 
-	if err, warn := p.Load("../plugins"); err != nil {
+	err, warn := p.Load("../plugins");
+	if err != nil {
 		fmt.Println(err)
 		return
 	}
