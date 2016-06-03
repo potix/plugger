@@ -87,7 +87,6 @@ import "C"
 
 import (
 	"fmt"
-	"os"
 	"bytes"
 	"unsafe"
 	"reflect"
