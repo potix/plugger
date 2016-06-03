@@ -177,5 +177,10 @@ func main() {
 		}
 	}
 
+	p.NewPlugin("sample1", result.NewResultAsInterface,
+	     result.NewCommandResultAsInterface, event.NewEventParamAsInterface)
+
+	p.Unload("sample1")
+
 	p.Free()
 }
