@@ -408,7 +408,7 @@ func (p *Plugger) SetVersionSafe(versionSafe bool) {
 	p.versionSafe = versionSafe
 }
 
-func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
+func (p *Plugger) Load(pluginDirPath string) (warn error, err error) {
 	var warning error = nil
 	ext := ".so"
 	if runtime.GOOS == "windows" {
@@ -418,7 +418,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 	}
 	pluginFiles := make([]string, 0, 0)
 	if err := gatherPluginFiles(&pluginFiles, pluginDirPath, ext); err != nil {
-		return err, nil
+		return nil, err
 	}
 	for _, pf := range pluginFiles {
 		dlHandle, err := dlOpen(pf, Now|Local)
@@ -584,7 +584,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			continue
 		}
 	}
-	return nil, warning
+	return warning, nil
 }
 
 func (p *Plugger) GetBuildVersion() uint64 {
