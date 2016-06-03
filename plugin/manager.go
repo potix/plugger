@@ -28,7 +28,6 @@ type eventInfo struct {
 	eventParamBuffer *[]byte
 	err              error
 	eventResChan     chan *eventResponse
-	argErr           error
 }
 
 type eventManager struct {
@@ -46,14 +45,13 @@ func (em *eventManager) newEventResponse(
 }
 
 func (em *eventManager) newEventInfo(eventId uint64, eventName *string,
-     eventParamBuffer *[]byte, err error, eventResChan chan *eventResponse, argErr error) *eventInfo {
+     eventParamBuffer *[]byte, err error, eventResChan chan *eventResponse) *eventInfo {
 	return &eventInfo {
 		eventId          : eventId,
 		eventName        : eventName,
 		eventParamBuffer : eventParamBuffer,
 		err              : err,
 		eventResChan     : eventResChan,
-		argErr           : argErr,
 	}
 }
 

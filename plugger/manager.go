@@ -93,6 +93,12 @@ func (d *dynLoadLibManager) setIfAbsent(pluginName string, dlLib *dynLoadLib) bo
 	return !ok
 }
 
+func (d *dynLoadLibManager) delete(pluginName string) {
+        d.rwMutex.Lock()
+        defer d.rwMutex.Unlock()
+	delete(d.dynLoadLibs, pluginName)
+}
+
 func (d *dynLoadLibManager) getPluginNames() []string {
 	d.rwMutex.RLock()
 	defer d.rwMutex.RUnlock()

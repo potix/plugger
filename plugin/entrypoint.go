@@ -383,21 +383,21 @@ func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulong
 		// lack of event name buffer
 		// need recall
 		instInfo.eventMgr.set(uint64(eventId), instInfo.eventMgr.newEventInfo(uint64(eventId),
-		    &event.eventName, &eventParamBuffer, err, event.eventResChan, nil))
+		    &event.eventName, &eventParamBuffer, err, event.eventResChan))
 		return C.int(common.RVNeedGlowEventNameBuffer)
 	}
 	if  len(eventParamBuffer) != 0 && len(eventParamBuffer) > int(*eventParamLen) {
 		// lack of event param buffer
 		// need recall
 		instInfo.eventMgr.set(uint64(eventId), instInfo.eventMgr.newEventInfo(uint64(eventId),
-		    &event.eventName, &eventParamBuffer, err, event.eventResChan, nil))
+		    &event.eventName, &eventParamBuffer, err, event.eventResChan))
 		return C.int(common.RVNeedGlowEventParamBuffer)
 	}
 	if err != nil && len(err.Error()) > int(*errorLen) {
 		// lack of error buffer
 		// need recall
 		instInfo.eventMgr.set(uint64(eventId), instInfo.eventMgr.newEventInfo(uint64(eventId),
-		    &event.eventName, &eventParamBuffer, err, event.eventResChan, nil))
+		    &event.eventName, &eventParamBuffer, err, event.eventResChan))
 		return C.int(common.RVNeedGlowErrorBuffer)
 	}
 	if len(event.eventName) != 0 {
@@ -416,7 +416,7 @@ func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulong
 		*errorLen = 0
 	}
 	instInfo.eventMgr.set(uint64(eventId),
-	    instInfo.eventMgr.newEventInfo(uint64(eventId), nil, nil, nil, event.eventResChan, nil))
+	    instInfo.eventMgr.newEventInfo(uint64(eventId), nil, nil, nil, event.eventResChan))
         return C.int(common.RVSuccess)
 }
 

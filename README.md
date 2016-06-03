@@ -9,9 +9,11 @@ plugin を利用する側が import するライブラリ。 NewPlugger を実�
 
 ### Pluggerインスタンス
 
-- Load : 与えられたパス以下の shared library を探してロードする
-- GetPluginNames : ロードしたプラグインの名前一覧を取得する
-- ExistsPluginNames : プラグイン名の一覧を渡して、存在するものの一覧が返る
+- Load : 与えられたパス以下の shared library を探してロードする。
+- Unload : 指定された名前を持つライブラリをアンロードする。
+- GetBuildVersion : ビルドバージョンを取得する。
+- GetPluginNames : ロードしたプラグインの名前一覧を取得する。
+- ExistsPluginNames : プラグイン名の一覧を渡して、存在するものの一覧が返る。
 - NewPlugin  : プラグインハンドルインスタンスの作成。plugin呼び出し後の返却される結果を格納する構造体を生成する関数をセットする必要がある。
 - FreePlugin : プラグインハンドルインスタンスの削除。
 - Free       : Pluggerインスタンスが持つ全てのリソースを解放する。
@@ -52,7 +54,7 @@ PluginHandleと対応している。
 - Stop    : プラグインを停止する。
 - Reload  : プラグインを再設定をする。
 - Fini    : プラグインの終了処理をする。
-- Command : プラグインにコマンドを送る。
+- Command : プラグインに送られたコマンドを処理する。
  
 ## 注意事項
 - 1. plugin呼び出し側とplugin側で共有される。結果の構造体やコンフィグ構造体やコマンドパラメータ構造体は、バイト列に変換して渡しているため、encode/decodeができるように、必要なメンバの先頭は大文字にしておく必要があります。
