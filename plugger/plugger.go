@@ -409,7 +409,7 @@ func (p *Plugger) SetVersionSafe(versionSafe bool) {
 }
 
 func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
-	var warn error
+	var warning error = nil
 	ext := ".so"
 	if runtime.GOOS == "windows" {
 		return nil, errors.New("no support platform")
@@ -423,140 +423,140 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 	for _, pf := range pluginFiles {
 		dlHandle, err := dlOpen(pf, Now|Local)
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		getBuildVersion, err := dlHandle.dlSymbol("GetBuildVersion")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		getName, err := dlHandle.dlSymbol("GetName")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		newPlugin, err := dlHandle.dlSymbol("NewPlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		initPlugin, err := dlHandle.dlSymbol("InitPlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		startPlugin, err := dlHandle.dlSymbol("StartPlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		stopPlugin, err := dlHandle.dlSymbol("StopPlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		reloadPlugin, err := dlHandle.dlSymbol("ReloadPlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		finiPlugin, err := dlHandle.dlSymbol("FiniPlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		command, err := dlHandle.dlSymbol("Command")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		freePlugin, err := dlHandle.dlSymbol("FreePlugin")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		eventListenerLoop, err := dlHandle.dlSymbol("EventListenerLoop")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		eventResult, err := dlHandle.dlSymbol("EventResult")
 		if err != nil {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: %v", pf, err.Error()))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: %v", pf, err.Error()))
+				errors.Wrap(warning, fmt.Sprintf("%v: %v", pf, err.Error()))
 			}
 			dlHandle.dlClose()
 			continue
 		}
 		pluginName := p.callEpGetName(getName)
 		if pluginName == "" {
-			if warn != nil {
-				warn = errors.New(fmt.Sprintf("%v: plugin name is empty", pf))
+			if warning != nil {
+				warning = errors.New(fmt.Sprintf("%v: plugin name is empty", pf))
 			} else {
-				errors.Wrap(warn, fmt.Sprintf("%v: plugin name is empty", pf))
+				errors.Wrap(warning, fmt.Sprintf("%v: plugin name is empty", pf))
 			}
 			dlHandle.dlClose()
 			continue
@@ -564,11 +564,11 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 		pluginBuildVersion := p.callEpGetBuildVersion(getBuildVersion)
 		if common.BuildVersion != pluginBuildVersion {
 			if p.versionSafe {
-				if warn != nil {
-					warn = errors.New(fmt.Sprintf("build version is mismatch (plugger %v, plugin %v), skip plugin",
+				if warning != nil {
+					warning = errors.New(fmt.Sprintf("build version is mismatch (plugger %v, plugin %v), skip plugin",
 					    common.BuildVersion, pluginBuildVersion))
 				} else {
-					errors.Wrap(warn,
+					errors.Wrap(warning,
 					    fmt.Sprintf("build version is mismatch (plugger %v, plugin %v), skip plugin",
 					    common.BuildVersion, pluginBuildVersion))
 				}
@@ -584,7 +584,7 @@ func (p *Plugger) Load(pluginDirPath string) (err error, warn error) {
 			continue
 		}
 	}
-	return nil, warn
+	return nil, warning
 }
 
 func (p *Plugger) GetBuildVersion() uint64 {
