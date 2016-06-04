@@ -52,6 +52,7 @@ func main() {
 		fmt.Println(warn)
 	}
 
+	fmt.Println("------- build version -------")
 	fmt.Println(p.GetBuildVersion())
 
 	fmt.Println("------- get plugins -------")
@@ -62,6 +63,12 @@ func main() {
 	fmt.Println("------- exists plugins -------")
 	v := p.ExistsPluginNames([]string{"sample3","sample2","sample1", "sample0"})
 	fmt.Println(v)
+
+	fmt.Println("------- plugin info -------")
+	pbv, fp := p.GetPluginInfo("sample1")
+	fmt.Println(pbv, fp)
+	pbv, fp = p.GetPluginInfo("sample2")
+	fmt.Println(pbv, fp)
 
 	fmt.Println("--------plugin1--------")
 	time.Sleep(3 * time.Second)

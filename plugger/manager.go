@@ -31,20 +31,22 @@ func newBufferManager(initBufferSize int) *bufferManager {
 }
 
 type dynLoadLib struct {
-        pluginName        string
-        dlHandle          *dlHandle
-        getBuildVersion   unsafe.Pointer
-        getName           unsafe.Pointer
-        newPlugin         unsafe.Pointer
-        initPlugin        unsafe.Pointer
-        startPlugin       unsafe.Pointer
-        stopPlugin        unsafe.Pointer
-        reloadPlugin      unsafe.Pointer
-        finiPlugin        unsafe.Pointer
-        command           unsafe.Pointer
-        freePlugin        unsafe.Pointer
-        eventListenerLoop unsafe.Pointer
-        eventResult       unsafe.Pointer
+        pluginName         string
+        dlHandle           *dlHandle
+        getBuildVersion    unsafe.Pointer
+        getName            unsafe.Pointer
+        newPlugin          unsafe.Pointer
+        initPlugin         unsafe.Pointer
+        startPlugin        unsafe.Pointer
+        stopPlugin         unsafe.Pointer
+        reloadPlugin       unsafe.Pointer
+        finiPlugin         unsafe.Pointer
+        command            unsafe.Pointer
+        freePlugin         unsafe.Pointer
+        eventListenerLoop  unsafe.Pointer
+        eventResult        unsafe.Pointer
+	pluginBuildVersion uin64
+	filePath	   string
 }
 
 type dynLoadLibManager struct {
@@ -57,22 +59,24 @@ func (d *dynLoadLibManager) newDynLoadLib(pluginName string, dlHandle *dlHandle,
      initPlugin unsafe.Pointer, startPlugin unsafe.Pointer, stopPlugin unsafe.Pointer,
      reloadPlugin unsafe.Pointer, finiPlugin unsafe.Pointer, command unsafe.Pointer,
      freePlugin unsafe.Pointer, eventListenerLoop unsafe.Pointer,
-     eventResult unsafe.Pointer) *dynLoadLib {
+     eventResult unsafe.Pointer, pluginBuildVersion uint64, filePath string) *dynLoadLib {
 	return &dynLoadLib {
-		pluginName        : pluginName,
-		dlHandle          : dlHandle,
-		getBuildVersion   : getBuildVersion,
-		getName           : getName,
-		newPlugin         : newPlugin,
-		initPlugin        : initPlugin,
-		startPlugin       : startPlugin,
-		stopPlugin        : stopPlugin,
-		reloadPlugin      : reloadPlugin,
-		finiPlugin        : finiPlugin,
-		command           : command,
-		freePlugin        : freePlugin,
-		eventListenerLoop : eventListenerLoop,
-		eventResult       : eventResult,
+		pluginName         : pluginName,
+		dlHandle           : dlHandle,
+		getBuildVersion    : getBuildVersion,
+		getName            : getName,
+		newPlugin          : newPlugin,
+		initPlugin         : initPlugin,
+		startPlugin        : startPlugin,
+		stopPlugin         : stopPlugin,
+		reloadPlugin       : reloadPlugin,
+		finiPlugin         : finiPlugin,
+		command            : command,
+		freePlugin         : freePlugin,
+		eventListenerLoop  : eventListenerLoop,
+		eventResult        : eventResult,
+		pluginBuildVersion : pluginBuildVersion
+		filePath           : filePath
 	}
 }
 

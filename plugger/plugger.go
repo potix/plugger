@@ -578,7 +578,7 @@ func (p *Plugger) Load(pluginDirPath string) (warn error, err error) {
 		}
 	 	if !p.dynLoadLibMgr.setIfAbsent(pluginName, p.dynLoadLibMgr.newDynLoadLib(pluginName, dlHandle,
 		    getBuildVersion, getName, newPlugin, initPlugin, startPlugin, stopPlugin, reloadPlugin,
-		    finiPlugin, command, freePlugin, eventListenerLoop, eventResult)) {
+		    finiPlugin, command, freePlugin, eventListenerLoop, eventResult, pluginBuildVersion, pf)) {
 			// already exist plugin
 			dlHandle.dlClose()
 			continue
@@ -608,6 +608,14 @@ func (p *Plugger) ExistsPluginNames(candidatePluginNames []string) (pluginNames 
 	}
 	return exists
 }
+
+func (p *Plugger) GetPluginInfo(pluginName string) (pluginBuildVersion uint64, filePath string, err error) {
+	dlLib, ok := p.dynLoadLibMgr.get(pluginName)
+	if !ok {
+		return 0 "", errors.Errorf("not found plugin name (%v)", pluginName)
+	}
+	return dlLib.pluginBuildVersion, dlLib.filePath, nil
+} 
 
 func (p *Plugger) NewPlugin(pluginName string, newResultFunc func() interface{},
      newCommandResultFunc func() interface{}, newEventParamFunc func() interface{}) (pluginHandle *PluginHandle, err error) {

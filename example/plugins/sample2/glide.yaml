@@ -1,10 +1,4 @@
 package: github.com/potix/plugger/example/plugins/sample2
 version: ""
 import:
-- package: github.com/potix/plugger/plugin
-- package: github.com/potix/plugger/common
-- package: github.com/potix/plugger/example/command
-- package: github.com/potix/plugger/example/event
-- package: github.com/potix/plugger/example/config
-- package: github.com/potix/plugger/example/result
 - package: github.com/pkg/errors
