@@ -18,7 +18,7 @@ func gatherPluginFiles(pluginFiles *[]string, pluginDirPath string, targetExt st
 		}
         } else {
 		if filepath.Ext(f.Name()) == targetExt {
-			*pluginFiles = append(*pluginFiles, fp)
+			*pluginFiles = append(*pluginFiles, filepath.Abs(fp))
 		}
         }
     }

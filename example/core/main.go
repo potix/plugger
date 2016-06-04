@@ -65,9 +65,15 @@ func main() {
 	fmt.Println(v)
 
 	fmt.Println("------- plugin info -------")
-	pbv, fp := p.GetPluginInfo("sample1")
+	pbv, fp ,err := p.GetPluginInfo("sample1")
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(pbv, fp)
-	pbv, fp = p.GetPluginInfo("sample2")
+	pbv, fp ,err= p.GetPluginInfo("sample2")
+	if err != nil {
+		fmt.Println(err)
+	}
 	fmt.Println(pbv, fp)
 
 	fmt.Println("--------plugin1--------")
