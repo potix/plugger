@@ -75,8 +75,8 @@ func (d *dynLoadLibManager) newDynLoadLib(pluginName string, dlHandle *dlHandle,
 		freePlugin         : freePlugin,
 		eventListenerLoop  : eventListenerLoop,
 		eventResult        : eventResult,
-		pluginBuildVersion : pluginBuildVersion
-		filePath           : filePath
+		pluginBuildVersion : pluginBuildVersion,
+		filePath           : filePath,
 	}
 }
 
