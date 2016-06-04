@@ -45,7 +45,7 @@ type dynLoadLib struct {
         freePlugin         unsafe.Pointer
         eventListenerLoop  unsafe.Pointer
         eventResult        unsafe.Pointer
-	pluginBuildVersion uin64
+	pluginBuildVersion uint64
 	filePath	   string
 }
 
