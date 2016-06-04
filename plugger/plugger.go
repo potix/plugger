@@ -612,7 +612,7 @@ func (p *Plugger) ExistsPluginNames(candidatePluginNames []string) (pluginNames 
 func (p *Plugger) GetPluginInfo(pluginName string) (pluginBuildVersion uint64, filePath string, err error) {
 	dlLib, ok := p.dynLoadLibMgr.get(pluginName)
 	if !ok {
-		return 0 "", errors.Errorf("not found plugin name (%v)", pluginName)
+		return 0. "", errors.Errorf("not found plugin name (%v)", pluginName)
 	}
 	return dlLib.pluginBuildVersion, dlLib.filePath, nil
 } 
