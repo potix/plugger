@@ -1,5 +1,5 @@
 package common
 
 const (
-	BuildVersion = 1
+	BuildVersion = 2
 )

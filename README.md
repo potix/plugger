@@ -13,6 +13,7 @@ plugin を利用する側が import するライブラリ。 NewPlugger を実�
 - Unload : 指定された名前を持つライブラリをアンロードする。
 - GetBuildVersion : ビルドバージョンを取得する。
 - GetPluginNames : ロードしたプラグインの名前一覧を取得する。
+- GetPluginInfo : 指定された名前のプラグインの情報を取得する。 
 - ExistsPluginNames : プラグイン名の一覧を渡して、存在するものの一覧が返る。
 - NewPlugin  : プラグインハンドルインスタンスの作成。plugin呼び出し後の返却される結果を格納する構造体を生成する関数をセットする必要がある。
 - FreePlugin : プラグインハンドルインスタンスの削除。
