@@ -1,4 +1,6 @@
 package: github.com/potix/plugger/example/core
 version: ""
+devImport:
+- github.com/potix/plugger
 import:
 - package: github.com/pkg/errors
