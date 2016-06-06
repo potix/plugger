@@ -28,7 +28,7 @@ plugin を利用する側が import するライブラリ。 NewPlugger を実�
 - Reload  : プラグインを再設定をする。
 - Fini    : プラグインの終了処理をする。
 - Command : プラグインにコマンドを送る。
-- EventOn : プラグインからのイベント受けて処理結果を返すハンドラを登録する。
+- SetEventHandler : プラグインからのイベント受けて処理結果を返すハンドラを登録する。
 
 ## plugin
 plugin 側の実装が import するライブラリ。 Plugin インターフェイスを満たしたインスタンスを用意する必要がある。

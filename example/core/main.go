@@ -11,12 +11,11 @@ import (
 )
 
 func eventHandler(pluginHandle *plugger.PluginHandle,
-     eventName string, eventParam interface{}, err error) (interface{}, error) {
+     eventParam interface{}, err error) (interface{}, error) {
 	fmt.Println("event handler")
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println("event name", eventName)
 	fmt.Println("event param 1", eventParam.(*event.EventParam).GetValue1())
 	fmt.Println("event param 2", eventParam.(*event.EventParam).GetValue2())
 
@@ -106,7 +105,7 @@ func main() {
 		} else {
 			fmt.Println("c: plugin1 reload result", r.(*result.Result).GetValue())
 		}
-		plugin1.EventOn("hogehoge", eventHandler)
+		plugin1.SetEventHandler(eventHandler)
 		fmt.Println("c: plugin1 command")
 		r, err = plugin1.Command(commandParam)
 		if err != nil {
@@ -164,7 +163,7 @@ func main() {
 		} else {
 			fmt.Println("c: plugin2 reload result", r.(*result.Result).GetValue())
 		}
-		plugin2.EventOn("fugafuga", eventHandler)
+		plugin2.SetEventHandler(eventHandler)
 		fmt.Println("c: plugin2 command")
 		r, err = plugin2.Command(commandParam)
 		if err != nil {

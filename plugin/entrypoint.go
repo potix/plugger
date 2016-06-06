@@ -120,11 +120,9 @@ func FreePlugin(instanceId C.ulonglong) C.int {
 
 //export EventListenerLoop
 func EventListenerLoop(instanceId C.ulonglong, recall C.int, eventId C.ulonglong, 
-     eventNamePtr *C.char, eventNameLen *C.int,
      eventParamPtr *C.char, eventParamLen *C.int,
      errorPtr *C.char, errorLen *C.int) C.int {
 	return eventListenerLoopFunc(instanceId, recall, eventId,
-            eventNamePtr, eventNameLen,
 	    eventParamPtr, eventParamLen,
 	    errorPtr, errorLen)
 }
@@ -318,7 +316,6 @@ func withArgBaseFunc(instanceId C.ulonglong, recall C.int, requestId C.ulonglong
 }
 
 func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulonglong,
-      eventNamePtr *C.char, eventNameLen *C.int,
       eventParamPtr *C.char, eventParamLen *C.int,
       errorPtr *C.char, errorLen *C.int,) C.int {
         instInfo, err := pluginMgr.instMgr.getInstance(uint64(instanceId))
@@ -333,11 +330,6 @@ func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulong
 			// not reached
 			panic(fmt.Sprintf("not found result of instance (eventId = %v)", eventId))
 		}
-		if len(*eventInfo.eventName) != 0 && len(*eventInfo.eventName) > int(*eventNameLen) {
-			// lack of event name buffer
-			// need recall
-			return C.int(common.RVNeedGlowEventNameBuffer)
-		}
 		if len(*eventInfo.eventParamBuffer) != 0 && len(*eventInfo.eventParamBuffer) > int(*eventParamLen) {
 			// lack of result buffer
 			// need recall
@@ -347,11 +339,6 @@ func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulong
 			// lack of error buffer
 			// need recall
 			return C.int(common.RVNeedGlowErrorBuffer)
-		}
-		if len(*eventInfo.eventName) != 0 {
-			copyBytesToPtrAndLen([]byte(*eventInfo.eventName), eventNamePtr, eventNameLen)
-		} else {
-			*eventNameLen = 0
 		}
 		if len(*eventInfo.eventParamBuffer) != 0 {
 			copyBytesToPtrAndLen(*eventInfo.eventParamBuffer, eventParamPtr, eventParamLen)
@@ -379,31 +366,19 @@ func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulong
 			eventParamBuffer = eventParamBytesBuffer.Bytes()
 		}
 	}
-	if  len(event.eventName) != 0 && len(event.eventName) > int(*eventNameLen) {
-		// lack of event name buffer
-		// need recall
-		instInfo.eventMgr.set(uint64(eventId), instInfo.eventMgr.newEventInfo(uint64(eventId),
-		    &event.eventName, &eventParamBuffer, err, event.eventResChan))
-		return C.int(common.RVNeedGlowEventNameBuffer)
-	}
 	if  len(eventParamBuffer) != 0 && len(eventParamBuffer) > int(*eventParamLen) {
 		// lack of event param buffer
 		// need recall
 		instInfo.eventMgr.set(uint64(eventId), instInfo.eventMgr.newEventInfo(uint64(eventId),
-		    &event.eventName, &eventParamBuffer, err, event.eventResChan))
+		    &eventParamBuffer, err, event.eventResChan))
 		return C.int(common.RVNeedGlowEventParamBuffer)
 	}
 	if err != nil && len(err.Error()) > int(*errorLen) {
 		// lack of error buffer
 		// need recall
 		instInfo.eventMgr.set(uint64(eventId), instInfo.eventMgr.newEventInfo(uint64(eventId),
-		    &event.eventName, &eventParamBuffer, err, event.eventResChan))
+		    &eventParamBuffer, err, event.eventResChan))
 		return C.int(common.RVNeedGlowErrorBuffer)
-	}
-	if len(event.eventName) != 0 {
-		copyBytesToPtrAndLen([]byte(event.eventName), eventNamePtr, eventNameLen)
-	} else {
-		*eventNameLen = 0
 	}
 	if len(eventParamBuffer) != 0 {
 		copyBytesToPtrAndLen(eventParamBuffer, eventParamPtr, eventParamLen)
@@ -416,7 +391,7 @@ func eventListenerLoopFunc(instanceId C.ulonglong, recall C.int, eventId C.ulong
 		*errorLen = 0
 	}
 	instInfo.eventMgr.set(uint64(eventId),
-	    instInfo.eventMgr.newEventInfo(uint64(eventId), nil, nil, nil, event.eventResChan))
+	    instInfo.eventMgr.newEventInfo(uint64(eventId), nil, nil, event.eventResChan))
         return C.int(common.RVSuccess)
 }
 

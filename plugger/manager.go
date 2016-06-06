@@ -154,7 +154,7 @@ type PluginHandle struct {
         newResultFunc        func() interface{}
         newCommandResultFunc func() interface{}
         newEventParamFunc    func() interface{}
-        eventHandlerMgr      *eventHandlerManager
+        eventHandler         func(pluginHandle *PluginHandle,eventParam interface{}, err error) (interface{}, error)
         smallBufferMgr       *bufferManager
         bigBufferMgr         *bufferManager
 	requestIdGen         *idGenerator
@@ -177,7 +177,6 @@ func (p *pluginHandleManager) newPluginHandle(instanceId uint64,
                 newResultFunc : newResultFunc,
                 newCommandResultFunc : newCommandResultFunc,
                 newEventParamFunc : newEventParamFunc,
-                eventHandlerMgr : newEventHandlerManager(),
                 smallBufferMgr : newBufferManager(smallBufferSize),
                 bigBufferMgr : newBufferManager(bigBufferSize),
                 requestIdGen : newIdGenerator(),
@@ -227,31 +226,3 @@ func newPluginHandleManager() *pluginHandleManager {
 	}
 }
 
-type eventHandlerManager struct {
-	eventHandlers map[string]func(pluginHandle *PluginHandle,
-	    eventName string, eventParam interface{}, err error) (interface{}, error)
-	rwMutex	*sync.RWMutex
-}
-
-func (e *eventHandlerManager) set(eventName string,
-     eventHandler func(pluginHandle *PluginHandle, eventName string, eventParam interface{}, err error) (interface{}, error)) {
-        e.rwMutex.Lock()
-        defer e.rwMutex.Unlock()
-	e.eventHandlers[eventName] = eventHandler
-}
-
-func (e *eventHandlerManager) get(eventName string) (func(pluginHandle *PluginHandle,
-     eventName string, eventParam interface{}, err error) (interface{}, error), bool) {
-        e.rwMutex.Lock()
-        defer e.rwMutex.Unlock()
-	eventHandler, ok := e.eventHandlers[eventName]
-	return eventHandler, ok
-}
-
-func newEventHandlerManager() *eventHandlerManager {
-	return &eventHandlerManager{
-		eventHandlers : make(map[string]func(pluginHandle *PluginHandle,
-		    eventName string, eventParam interface{}, err error) (interface{}, error)),
-		rwMutex : new(sync.RWMutex),
-	}
-}

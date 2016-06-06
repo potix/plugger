@@ -11,7 +11,6 @@ const (
 )
 
 type eventRequest struct {
-        eventName string
         eventParam interface{}
 	eventResChan chan *eventResponse
 }
@@ -24,7 +23,6 @@ type eventResponse struct {
 
 type eventInfo struct {
 	eventId          uint64
-	eventName        *string
 	eventParamBuffer *[]byte
 	err              error
 	eventResChan     chan *eventResponse
@@ -44,11 +42,10 @@ func (em *eventManager) newEventResponse(
 	}
 }
 
-func (em *eventManager) newEventInfo(eventId uint64, eventName *string,
-     eventParamBuffer *[]byte, err error, eventResChan chan *eventResponse) *eventInfo {
+func (em *eventManager) newEventInfo(eventId uint64, eventParamBuffer *[]byte,
+     err error, eventResChan chan *eventResponse) *eventInfo {
 	return &eventInfo {
 		eventId          : eventId,
-		eventName        : eventName,
 		eventParamBuffer : eventParamBuffer,
 		err              : err,
 		eventResChan     : eventResChan,

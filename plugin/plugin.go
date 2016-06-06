@@ -29,9 +29,8 @@ func SetNewEventResultFunc(newEventResultFunc func() interface{}) {
 	pluginMgr.newEventResultFunc = newEventResultFunc
 }
 
-func EventEmit(plugin Plugin, eventName string, eventParam interface{}) (eventResult interface{}, handleErr error) {
+func EventEmit(plugin Plugin, eventParam interface{}) (eventResult interface{}, handleErr error) {
 	eventRequest := &eventRequest {
-		eventName: eventName,
 		eventParam: eventParam,
 		eventResChan : make(chan *eventResponse),
 	}

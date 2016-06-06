@@ -62,7 +62,7 @@ func (s *sample1) Command(cmdParam interface{}) (interface{}, error) {
 	event.SetValue1("1111")
 	event.SetValue2("2222")
 
-	eventResult ,err := plugin.EventEmit(s, "hogehoge", event)
+	eventResult ,err := plugin.EventEmit(s, event)
 	if err != nil {
 		println("p: event result error", err.Error())
 	}

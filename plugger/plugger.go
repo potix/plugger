@@ -55,14 +55,12 @@ package plugger
 //     void *fnptr,
 //     unsigned long long instance_id, int recall,
 //     unsigned long long event_id,
-//     char *event_name_ptr, int *event_name_len,
 //     char *event_param_ptr, int *event_param_len,
 //     char *error_ptr, int *error_len)
 // {
 //	int (*fn)(unsigned long long, int recall, unsigned long long,
-//          char *, int *, char *, int *, char *, int *) = fnptr;
+//          char *, int *, char *, int *) = fnptr;
 //	return fn(instance_id, recall, event_id,
-//          event_name_ptr, event_name_len,
 //          event_param_ptr, event_param_len,
 //	    error_ptr, error_len);
 // }
@@ -141,10 +139,9 @@ func (ph *PluginHandle)Command(commandParam interface{}) (commandResult interfac
 	return ph.callEpWithArg(ph.dlLib.command, commandParam, ph.newCommandResultFunc())
 }
 
-func (ph *PluginHandle)EventOn(eventName string,
-     eventHandler func(pluginHandle *PluginHandle, eventName string,
+func (ph *PluginHandle)SetEventHandler(eventHandler func(pluginHandle *PluginHandle, 
      eventParam interface{}, err error) (eventResult interface{}, handleErr error)) {
-	ph.eventHandlerMgr.set(eventName, eventHandler)
+	ph.eventHandler = eventHandler
 }
 
 func (ph *PluginHandle) eventListenerLoop() {
@@ -152,16 +149,16 @@ func (ph *PluginHandle) eventListenerLoop() {
 		return
 	}
 	for {
-		eventId, eventName, eventParam, err, finish := ph.callEpELLoop(ph.dlLib.eventListenerLoop, ph.newEventParamFunc())
+		eventId, eventParam, err, finish := ph.callEpELLoop(ph.dlLib.eventListenerLoop, ph.newEventParamFunc())
 		if finish {
 			break
 		}
-		eventHandler, ok := ph.eventHandlerMgr.get(eventName)
-		if !ok {
+		if ph.eventHandler == nil {
 			ph.callEpEventResult(ph.dlLib.eventResult, eventId, nil, nil, common.EVNoHandling)
+		} else {
+			eventResult, err := ph.eventHandler(ph, eventParam, err)
+			ph.callEpEventResult(ph.dlLib.eventResult, eventId, eventResult, err, common.EVHandling)
 		}
-		eventResult, err := eventHandler(ph, eventName, eventParam, err)
-		ph.callEpEventResult(ph.dlLib.eventResult, eventId, eventResult, err, common.EVHandling)
 	}
 }
 
@@ -285,33 +282,24 @@ func (ph *PluginHandle)callEpWithArg(callPtr unsafe.Pointer, param interface{}, 
 	return result, err
 }
 
-func (ph *PluginHandle)callEpELLoop(callPtr unsafe.Pointer, eventParam interface{}) (uint64, string, interface{}, error, bool) {
+func (ph *PluginHandle)callEpELLoop(callPtr unsafe.Pointer, eventParam interface{}) (uint64, interface{}, error, bool) {
 	// call entry point
 	var recall int
 	var eventId uint64 = ph.eventIdGen.Get()
 	eventParamBuffer := ph.bigBufferMgr.getBuffer()
-	eventNameBuffer := ph.smallBufferMgr.getBuffer()
 	errorBuffer := ph.smallBufferMgr.getBuffer()
 	eventParamBufferPtr, eventParamBufferLenPtr := getCucharPtrAndCintPtrFromByteSlice(eventParamBuffer)
-	eventNameBufferPtr, eventNameBufferLenPtr := getCucharPtrAndCintPtrFromByteSlice(eventNameBuffer)
-	errorBufferPtr, errorBufferLenPtr := getCucharPtrAndCintPtrFromByteSlice(eventNameBuffer)
+	errorBufferPtr, errorBufferLenPtr := getCucharPtrAndCintPtrFromByteSlice(errorBuffer)
 	for {
 		retval := C.bridge_elloop_func(callPtr,
 		    C.ulonglong(ph.instanceId),
 		    C.int(recall),
 		    C.ulonglong(eventId),
-		    eventNameBufferPtr, eventNameBufferLenPtr,
 		    eventParamBufferPtr, eventParamBufferLenPtr,
 		    errorBufferPtr, errorBufferLenPtr)
 		if common.ReturnValue(retval) == common.RVSuccess {
 			// ok
 			break
-		} else if common.ReturnValue(retval) == common.RVNeedGlowEventNameBuffer {
-			// more event name buffer
-			// glow buffer and recall
-			eventNameBuffer = ph.bigBufferMgr.glowBuffer(eventNameBuffer)
-			eventNameBufferPtr, eventNameBufferLenPtr = getCucharPtrAndCintPtrFromByteSlice(eventNameBuffer)
-			recall = 1
 		} else if common.ReturnValue(retval) == common.RVNeedGlowEventParamBuffer {
 			// more event param buffer
 			// glow buffer and recall
@@ -326,21 +314,15 @@ func (ph *PluginHandle)callEpELLoop(callPtr unsafe.Pointer, eventParam interface
 			recall = 1
 		} else if common.ReturnValue(retval) == common.RVFinishEventListenerLoop {
 			// finish
-			return eventId, "", eventParam, nil, true
+			return eventId, eventParam, nil, true
 		}
 	}
 	var err error
 	eventParamBufferLen := getIntFromCintPtr(eventParamBufferLenPtr)
-	eventNameBufferLen := getIntFromCintPtr(eventNameBufferLenPtr)
 	errorBufferLen := getIntFromCintPtr(errorBufferLenPtr)
 	// rebuild error
 	if errorBufferLen != 0 {
 		err = errors.New(string(errorBuffer[0:errorBufferLen]))
-	}
-	// rebuild event name
-	var eventName string
-	if eventNameBufferLen != 0 {
-		eventName = string(eventNameBuffer[0:eventNameBufferLen])
 	}
 	// rebuild event param
 	if eventParamBufferLen != 0 {
@@ -353,7 +335,7 @@ func (ph *PluginHandle)callEpELLoop(callPtr unsafe.Pointer, eventParam interface
 			}
 		}
 	}
-	return eventId, eventName, eventParam, err, false
+	return eventId, eventParam, err, false
 }
 
 func (ph *PluginHandle)callEpEventResult(callPtr unsafe.Pointer, eventId uint64,
